@@ -49,8 +49,8 @@
             <TextBlock Text="по:" VerticalAlignment="Center" Margin="10,0,5,0"/>
             <DatePicker x:Name="EndDatePicker" Width="150" DisplayDateEnd="{x:Static sys:DateTime.Today}"/>
 
-            <Button Content="Применить фильтр" Width="150" Margin="20,0,0,0"/>
-            <Button Content="Сброс" Width="100" Margin="10,0,0,0"/>
+            <Button Content="Применить фильтр" Width="150" Margin="20,0,0,0" Click="ApplyFilterButton_Click"/>
+            <Button Content="Сброс" Width="100" Margin="10,0,0,0" Click="ResetFilterButton_Click"/>
         </StackPanel>
 
         <!-- Таблица -->
@@ -86,7 +86,7 @@
 
             <StackPanel Grid.Column="1" Orientation="Horizontal">
                 <Button Content="Добавить запись" Width="150" Margin="10,0,0,0" Click="AddRecordButton_Click"/>
-                <Button Content="Удалить выбранную" Width="170" Margin="10,0,0,0"/>
+                <Button Content="Удалить выбранную" Width="170" Margin="10,0,0,0" Click="DeleteRecordButton_Click"/>
                 <Button Content="Экспорт в PDF" Width="150" Margin="10,0,0,0"/>
             </StackPanel>
         </Grid>

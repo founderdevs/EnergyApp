@@ -12,7 +12,7 @@ namespace EnergyApp
 {
     public partial class DashboardWindow : Window
     {
-        private List<EnergyRecord> _records = new();
+        private List<EnergyRecord> allRecords = new();
 
         public DashboardWindow()
         {
@@ -23,16 +23,53 @@ namespace EnergyApp
 
         private void LoadData()
         {
-            _records = DatabaseHelper.GetRecords();
-            EnergyDataGrid.ItemsSource = _records;
-            UpdateSummary();
+            allRecords = DatabaseHelper.GetRecords();
+            EnergyDataGrid.ItemsSource = allRecords;
+            UpdateSummary(allRecords);
         }
 
-        private void UpdateSummary()
+        // Применить фильтр по диапазону дат
+        private void ApplyFilterButton_Click(object sender, RoutedEventArgs e)
         {
-            double totalKw = _records.Sum(r => r.Consumption);
-            double totalCost = _records.Sum(r => r.Cost);
-            SummaryText.Text = $"Итого: {totalKw} кВт⋅ч | {totalCost:F2} ₽";
+            if (StartDatePicker.SelectedDate == null || EndDatePicker.SelectedDate == null)
+            {
+                MessageBox.Show("Выберите обе даты для фильтрации.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            DateTime start = StartDatePicker.SelectedDate.Value;
+            DateTime end = EndDatePicker.SelectedDate.Value;
+
+            if (start > end)
+            {
+                MessageBox.Show("Начальная дата не может быть позже конечной.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            var filtered = allRecords
+                .Where(r => r.Date >= start && r.Date <= end)
+                .ToList();
+
+            EnergyDataGrid.ItemsSource = filtered;
+            UpdateSummary(filtered);
+        }
+
+        // Сброс фильтра
+        private void ResetFilterButton_Click(object sender, RoutedEventArgs e)
+        {
+            StartDatePicker.SelectedDate = null;
+            EndDatePicker.SelectedDate = null;
+            EnergyDataGrid.ItemsSource = allRecords;
+            UpdateSummary(allRecords);
+        }
+
+        // Пересчёт итогов
+        private void UpdateSummary(List<EnergyRecord> records)
+        {
+            double totalConsumption = records.Sum(r => r.Consumption);
+            double totalCost = records.Sum(r => r.Cost);
+
+            SummaryText.Text = $"Итого: {totalConsumption} кВт⋅ч | {totalCost:F2} ₽";
         }
 
         private void AddRecordButton_Click(object sender, RoutedEventArgs e)
