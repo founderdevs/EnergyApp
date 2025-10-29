@@ -1,34 +1,35 @@
 ﻿<Window x:Class="EnergyApp.AddRecordWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-		xmlns:sys="clr-namespace:System;assembly=mscorlib"
-        Title="Добавить запись" Height="300" Width="400"
-        WindowStartupLocation="CenterOwner">
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        Title="Добавить запись" Height="280" Width="380"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
+
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Margin="0,0,0,10">
-            <TextBlock Text="Дата:"/>
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+            <TextBlock Text="Дата:" Width="130" VerticalAlignment="Center"/>
             <DatePicker x:Name="DatePicker"
-						SelectedDate="{x:Static sys:DateTime.Today}"
-						DisplayDateEnd="{x:Static sys:DateTime.Today}" />
+                        SelectedDate="{x:Static sys:DateTime.Today}"
+                        DisplayDateEnd="{x:Static sys:DateTime.Today}"/>
         </StackPanel>
 
-        <StackPanel Margin="0,60,0,10">
-            <TextBlock Text="Потребление (кВт⋅ч):"/>
-            <TextBox x:Name="ConsumptionTextBox"/>
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,0,10">
+            <TextBlock Text="Потрачено (кВт⋅ч):" Width="130" VerticalAlignment="Center"/>
+            <TextBox x:Name="KilowattsTextBox" Width="200"/>
         </StackPanel>
 
-        <StackPanel Margin="0,120,0,10">
-            <TextBlock Text="Комментарий:"/>
-            <TextBox x:Name="CommentTextBox"/>
+        <StackPanel Orientation="Horizontal" Grid.Row="2" Margin="0,0,0,10">
+            <TextBlock Text="Цена за кВт⋅ч (₽):" Width="130" VerticalAlignment="Center"/>
+            <TextBox x:Name="PricePerKwTextBox" Width="200" Text="{Binding DefaultPrice, Mode=TwoWay}"/>
         </StackPanel>
 
-        <Button Content="Добавить" Grid.Row="3" Height="35" Width="100" HorizontalAlignment="Right" Click="AddButton_Click"/>
+        <Button Grid.Row="3" Content="Добавить" Width="100" HorizontalAlignment="Right" Click="AddButton_Click"/>
     </Grid>
 </Window>

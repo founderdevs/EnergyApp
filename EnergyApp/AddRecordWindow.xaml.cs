@@ -1,39 +1,41 @@
-﻿using EnergyApp.Data;
-using EnergyApp.Models;
+﻿using EnergyApp.Models;
 using System;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace EnergyApp
 {
     public partial class AddRecordWindow : Window
     {
+        public EnergyRecord NewRecord { get; private set; }
+        public double DefaultPrice { get; set; } = 5.0;
+
         public AddRecordWindow()
         {
             InitializeComponent();
+            DataContext = this;
         }
 
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!double.TryParse(ConsumptionTextBox.Text, out double consumption))
+            if (!DatePicker.SelectedDate.HasValue ||
+                !double.TryParse(KilowattsTextBox.Text, out double kwh) || kwh <= 0 ||
+                !double.TryParse(PricePerKwTextBox.Text, out double price) || price <= 0)
             {
-                MessageBox.Show("Введите корректное значение потребления!");
+                MessageBox.Show("Заполните все поля корректно.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            double price = 5.0; // Можно позже брать из поля PricePerKwTextBox в Dashboard
-            double cost = consumption * price;
-
-            var record = new EnergyRecord
+            double cost = kwh * price;
+            NewRecord = new EnergyRecord
             {
-                Date = DatePicker.SelectedDate ?? DateTime.Today,
-                Consumption = consumption,
-                Cost = cost,
-                Comment = CommentTextBox.Text
+                Date = DatePicker.SelectedDate.Value.Date,
+                Consumption = kwh,
+                PricePerKwh = price,
+                Cost = cost
             };
 
-            DatabaseHelper.AddRecord(record);
-            this.Close();
+            DialogResult = true;
+            Close();
         }
     }
 }
