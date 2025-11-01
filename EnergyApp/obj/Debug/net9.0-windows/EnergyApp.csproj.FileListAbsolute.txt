@@ -158,7 +158,8 @@ C:\Users\kurus\OneDrive\Desktop\EnergyApp\EnergyApp\bin\Debug\net9.0-windows\ite
 C:\Users\kurus\OneDrive\Desktop\EnergyApp\EnergyApp\bin\Debug\net9.0-windows\itext.svg.dll
 C:\Users\kurus\OneDrive\Desktop\EnergyApp\EnergyApp\bin\Debug\net9.0-windows\itext.commons.dll
 C:\Users\kurus\OneDrive\Desktop\EnergyApp\EnergyApp\bin\Debug\net9.0-windows\Microsoft.DotNet.PlatformAbstractions.dll
-C:\Users\kurus\OneDrive\Desktop\EnergyApp\EnergyApp\bin\Debug\net9.0-windows\PdfSharp.Charting.dll
-C:\Users\kurus\OneDrive\Desktop\EnergyApp\EnergyApp\bin\Debug\net9.0-windows\PdfSharp.dll
-C:\Users\kurus\OneDrive\Desktop\EnergyApp\EnergyApp\bin\Debug\net9.0-windows\de\PdfSharp.Charting.resources.dll
-C:\Users\kurus\OneDrive\Desktop\EnergyApp\EnergyApp\bin\Debug\net9.0-windows\de\PdfSharp.resources.dll
+C:\Users\kurus\OneDrive\Desktop\EnergyApp\EnergyApp\bin\Debug\net9.0-windows\PdfSharpCore.dll
+C:\Users\kurus\OneDrive\Desktop\EnergyApp\EnergyApp\bin\Debug\net9.0-windows\ICSharpCode.SharpZipLib.dll
+C:\Users\kurus\OneDrive\Desktop\EnergyApp\EnergyApp\bin\Debug\net9.0-windows\SixLabors.Fonts.dll
+C:\Users\kurus\OneDrive\Desktop\EnergyApp\EnergyApp\bin\Debug\net9.0-windows\SixLabors.ImageSharp.dll
+C:\Users\kurus\OneDrive\Desktop\EnergyApp\EnergyApp\bin\Debug\net9.0-windows\de\PdfSharpCore.resources.dll

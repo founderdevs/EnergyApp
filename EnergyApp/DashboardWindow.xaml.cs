@@ -1,12 +1,12 @@
 ﻿using EnergyApp.Data;
 using EnergyApp.Models;
 using System;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows;
-using PdfSharp.Pdf;
-using PdfSharp.Drawing;
+using PdfSharpCore.Pdf;
+using PdfSharpCore.Drawing;
 using System.Diagnostics;
 
 namespace EnergyApp
@@ -100,48 +100,97 @@ namespace EnergyApp
 
             if (dialog.ShowDialog() != true) return;
 
-            PdfDocument document = new PdfDocument();
-            document.Info.Title = "Учёт электроэнергии";
-
-            PdfPage page = document.AddPage();
-            XGraphics gfx = XGraphics.FromPdfPage(page);
-
-            XFont headerFont = new XFont("Times New Roman", 16, XFontStyle.Bold);
-            XFont tableFont = new XFont("Times New Roman", 12, XFontStyle.Regular);
-
-            double yPoint = 40;
-
-            // Заголовок
-            gfx.DrawString("Учёт электроэнергии", headerFont, XBrushes.Black,
-                new XRect(0, yPoint, page.Width, 20),
-                XStringFormats.TopCenter);
-
-            yPoint += 40;
-
-            // Таблица
-            double x = 40;
-            double rowHeight = 20;
-
-            // Заголовки колонок
-            string[] headers = { "Дата", "Расход (кВт⋅ч)", "Цена (₽/кВт⋅ч)", "Стоимость (₽)" };
-            for (int i = 0; i < headers.Length; i++)
+            try
             {
-                gfx.DrawString(headers[i], tableFont, XBrushes.Black, new XRect(x + i * 120, yPoint, 120, rowHeight), XStringFormats.TopLeft);
-            }
-            yPoint += rowHeight;
+                using (PdfDocument document = new PdfDocument())
+                {
+                    document.Info.Title = "Учёт электроэнергии";
+                    PdfPage page = document.AddPage();
+                    XGraphics gfx = XGraphics.FromPdfPage(page);
 
-            // Данные
-            foreach (EnergyRecord rec in allRecords)
+                    XFont headerFont = new XFont("Helvetica", 16, XFontStyle.Bold);
+                    XFont tableFont = new XFont("Helvetica", 12, XFontStyle.Regular);
+                    XFont boldFont = new XFont("Helvetica", 12, XFontStyle.Bold);
+
+                    double yPoint = 40;
+
+                    // Заголовок
+                    gfx.DrawString("Учёт электроэнергии", headerFont, XBrushes.Black,
+                        new XRect(0, yPoint, page.Width, 20),
+                        XStringFormats.TopCenter);
+
+                    yPoint += 40;
+
+                    // Таблица
+                    double x = 40;
+                    double rowHeight = 20;
+
+                    string[] headers = { "Дата", "Расход (кВт⋅ч)", "Цена (₽/кВт⋅ч)", "Стоимость (₽)" };
+                    for (int i = 0; i < headers.Length; i++)
+                    {
+                        gfx.DrawString(headers[i], boldFont, XBrushes.Black,
+                            new XRect(x + i * 120, yPoint, 120, rowHeight),
+                            XStringFormats.TopLeft);
+                    }
+
+                    yPoint += rowHeight;
+
+                    // Данные
+                    double totalConsumption = 0;
+                    double totalCost = 0;
+
+                    foreach (EnergyRecord rec in allRecords)
+                    {
+                        gfx.DrawString(rec.Date.ToString("yyyy-MM-dd"), tableFont, XBrushes.Black,
+                            new XRect(x + 0 * 120, yPoint, 120, rowHeight), XStringFormats.TopLeft);
+                        gfx.DrawString(rec.Consumption.ToString("F2"), tableFont, XBrushes.Black,
+                            new XRect(x + 1 * 120, yPoint, 120, rowHeight), XStringFormats.TopLeft);
+                        gfx.DrawString(rec.PricePerKwh.ToString("F2"), tableFont, XBrushes.Black,
+                            new XRect(x + 2 * 120, yPoint, 120, rowHeight), XStringFormats.TopLeft);
+                        gfx.DrawString(rec.Cost.ToString("F2"), tableFont, XBrushes.Black,
+                            new XRect(x + 3 * 120, yPoint, 120, rowHeight), XStringFormats.TopLeft);
+
+                        totalConsumption += rec.Consumption;
+                        totalCost += rec.Cost;
+                        yPoint += rowHeight;
+
+                        if (yPoint > page.Height - 60)
+                        {
+                            page = document.AddPage();
+                            gfx = XGraphics.FromPdfPage(page);
+                            yPoint = 40;
+                        }
+                    }
+
+                    // Пустая строка
+                    yPoint += 10;
+
+                    // ИТОГО
+                    gfx.DrawLine(XPens.Black, x, yPoint, x + 480, yPoint);
+                    yPoint += 10;
+
+                    gfx.DrawString("ИТОГО:", boldFont, XBrushes.Black,
+                        new XRect(x, yPoint, 240, rowHeight), XStringFormats.TopLeft);
+
+                    gfx.DrawString($"{totalConsumption:F2} кВт⋅ч", boldFont, XBrushes.Black,
+                        new XRect(x + 120, yPoint, 120, rowHeight), XStringFormats.TopLeft);
+
+                    gfx.DrawString($"{totalCost:F2} ₽", boldFont, XBrushes.Black,
+                        new XRect(x + 360, yPoint, 120, rowHeight), XStringFormats.TopLeft);
+
+                    // Сохранение
+                    using (var stream = new FileStream(dialog.FileName, FileMode.Create))
+                    {
+                        document.Save(stream, false);
+                    }
+                }
+
+                Process.Start(new ProcessStartInfo(dialog.FileName) { UseShellExecute = true });
+            }
+            catch (Exception ex)
             {
-                gfx.DrawString(rec.Date.ToString("yyyy-MM-dd"), tableFont, XBrushes.Black, new XRect(x + 0 * 120, yPoint, 120, rowHeight), XStringFormats.TopLeft);
-                gfx.DrawString(rec.Consumption.ToString(), tableFont, XBrushes.Black, new XRect(x + 1 * 120, yPoint, 120, rowHeight), XStringFormats.TopLeft);
-                gfx.DrawString(rec.PricePerKwh.ToString("F2"), tableFont, XBrushes.Black, new XRect(x + 2 * 120, yPoint, 120, rowHeight), XStringFormats.TopLeft);
-                gfx.DrawString(rec.Cost.ToString("F2"), tableFont, XBrushes.Black, new XRect(x + 3 * 120, yPoint, 120, rowHeight), XStringFormats.TopLeft);
-                yPoint += rowHeight;
+                MessageBox.Show($"Ошибка при экспорте PDF: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
-            document.Save(dialog.FileName);
-            Process.Start(new ProcessStartInfo(dialog.FileName) { UseShellExecute = true });
         }
     }
 }
